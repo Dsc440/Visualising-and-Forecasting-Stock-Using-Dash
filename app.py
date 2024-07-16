@@ -34,10 +34,7 @@ def get_more(df):
 
 
 app = dash.Dash(
-    __name__,
-    external_stylesheets=[
-        "https://fonts.googleapis.com/css2?family=Roboto&display=swap"
-    ])
+__name__, external_stylesheets=['/assets/styles.css'])
 server = app.server
 # html layout of site
 app.layout = html.Div(
@@ -47,10 +44,10 @@ app.layout = html.Div(
                 # Navigation
                 html.P("Welcome to the Stock Dash App!", className="start"),
                 html.Div([
-                    html.P("Input stock code: "),
+                    html.P("Input stock code:  "),
                     html.Div([
-                        dcc.Input(id="dropdown_tickers", type="text"),
-                        html.Button("Submit", id='submit'),
+                        dcc.Input(id="dropdown_tickers", type="text", placeholder="Ex: AAPL"),
+                        html.Button("Submit", id="submit"),
                     ],
                              className="form")
                 ],
@@ -110,7 +107,7 @@ app.layout = html.Div(
 ], [Input("submit", "n_clicks")], [State("dropdown_tickers", "value")])
 def update_data(n, val):  # inpur parameter(s)
     if n == None:
-        return "Hey there! Please enter a legitimate stock code to get details.", "https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg?w=1060&t=st=1671392138~exp=1671392738~hmac=99009bde6c65ba20674ec35db9eb5227556ba39c0e7e2b392f78eff692e57b21", "Stocks", None, None, None
+        return "Hey there! Please enter a legitimate stock code to get details.", "https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg?w=1060&t=st=1671392138~exp=1671392738~hmac=99009bde6c65ba20674ec35db9eb5227556ba39c0e7e2b392f78eff692e57b21", " ", None, None, None
         # raise PreventUpdate
     else:
         if val == None:
