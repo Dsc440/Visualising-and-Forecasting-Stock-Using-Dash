@@ -1,0 +1,121 @@
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+}
+
+/* Navigation */
+.nav {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+.start {
+    display:flex;
+    justify-content: center;
+    /* align-items:center; */
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-family: ROBOTO;
+    color: #123499;
+}
+
+.submitbut{
+    border-radius: 5px;
+    background-color: #007bff;
+    color:#fff
+}
+
+.input-place {
+    display:flex;
+    justify-content:center;
+    margin-bottom: 20px;
+}
+
+.form {
+    display: flex;
+    align-items: center;
+}
+
+.form dccInput,
+.form htmlButton {
+    margin-right: 10px;
+}
+
+.date {
+    display:flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stock-btn, 
+.indicators-btn, 
+.forecast-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.stock-btn:hover, 
+.indicators-btn:hover, 
+.forecast-btn:hover {
+    background-color: #0056b3;
+}
+
+#n_days {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 150px;
+}
+
+/* Content */
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.header img {
+    display:flex;
+    justify-content:center;
+    width: 1700px;
+    height: 200px;
+    margin-right: 20px;
+}
+
+.decription_ticker {
+    display:flex;
+    align-items:center;
+    font-size: 28px;
+    margin-bottom: 20px;
+
+}
+
+/* Graphs and Main Content */
+#graphs-content, 
+#main-content, 
+#forecast-content {
+    margin-bottom: 20px;
+}
