@@ -105,20 +105,32 @@ app.layout = html.Div(
     Output("indicators", "n_clicks"),
     Output("forecast", "n_clicks")
 ], [Input("submit", "n_clicks")], [State("dropdown_tickers", "value")])
-def update_data(n, val):  # inpur parameter(s)
-    if n == None:
-        return "Hey there! Please enter a legitimate stock code to get details.", "https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg?w=1060&t=st=1671392138~exp=1671392738~hmac=99009bde6c65ba20674ec35db9eb5227556ba39c0e7e2b392f78eff692e57b21", " ", None, None, None
-        # raise PreventUpdate
-    else:
-        if val == None:
-            raise PreventUpdate
-        else:
-            ticker = yf.Ticker(val)
-            inf = ticker.info
-            df = pd.DataFrame().from_dict(inf, orient="index").T
-            df[['c_logo', 'c_code', 'c_description']]
-            return df['c_description'].values[0], df['c_logo'].values[
-                0], df['c_code'].values[0]
+def update_data(n, val):
+    if n is None:
+        return "Hey there! Please enter a legitimate stock code to get details.", \
+               "https://img.freepik.com/free-vector/gradient-stock-market-concept_23-2149166910.jpg?w=1060&t=st=1671392138~exp=1671392738~hmac=99009bde6c65ba20674ec35db9eb5227556ba39c0e7e2b392f78eff692e57b21", \
+               " ", None, None, None
+
+    if val is None:
+        raise PreventUpdate
+
+    ticker = yf.Ticker(val)
+    inf = ticker.info
+
+    # Check if the required keys are present in inf
+    if 'logo_url' not in inf or 'shortName' not in inf or 'symbol' not in inf:
+        raise PreventUpdate  # or handle the case where information is missing
+
+    # Construct the DataFrame with the desired columns
+    df = pd.DataFrame({
+        'c_logo': [inf['logo_url']],
+        'c_code': [inf['symbol']],
+        'c_description': [inf['shortName']]
+    })
+
+    return df['c_description'].values[0], df['c_logo'].values[0], df['c_code'].values[0], None, None, None
+
+
 
 
 # callback for stocks graphs
