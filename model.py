@@ -17,17 +17,13 @@ def prediction(stock, n_days):
     from datetime import date, timedelta
     # load the data
 
-    df = yf.download(stock, period='60d')
+    df = yf.download(stock, period='6mo')
     df.reset_index(inplace=True)
     df['Day'] = df.index
 
-    days = list()
-    for i in range(len(df.Day)):
-        days.append([i])
-
     # Splitting the dataset
 
-    X = days
+    X = df[['Day']]
     Y = df[['Close']]
 
     x_train, x_test, y_train, y_test = train_test_split(X,
@@ -60,17 +56,15 @@ def prediction(stock, n_days):
                    gamma=best_params["gamma"],
                    max_iter=-1)
 
-    # Support Vector Regression Models
 
-    # RBF model
-    #rbf_svr = SVR(kernel='rbf', C=1000.0, gamma=4.0)
     rbf_svr = best_svr
 
     rbf_svr.fit(x_train, y_train)
 
-    output_days = list()
+    output_days = []
     for i in range(1, n_days):
-        output_days.append([i + x_test[-1][0]])
+        if len(x_test) > 0:
+            output_days.append([i + x_test.iloc[-1]['Day']])
 
     dates = []
     current = date.today()
@@ -82,7 +76,7 @@ def prediction(stock, n_days):
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=dates,  # np.array(ten_days).flatten(), 
+            x=dates,  
             y=rbf_svr.predict(output_days),
             mode='lines+markers',
             name='data'))
@@ -90,7 +84,7 @@ def prediction(stock, n_days):
         title="Predicted Close Price of next " + str(n_days - 1) + " days",
         xaxis_title="Date",
         yaxis_title="Closed Price",
-        # legend_title="Legend Title",
+      
     )
 
     return fig
