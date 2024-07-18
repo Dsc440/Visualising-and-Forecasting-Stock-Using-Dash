@@ -12,5 +12,4 @@ pandas
 plotly
 scikit-learn
 scipy
-sklearn
 yfinance
