@@ -1,90 +1,60 @@
-def prediction(stock, n_days):
-    import dash
-    from dash import dcc
-    from dash import html
-    from datetime import datetime as dt
-    import yfinance as yf
-    from dash.dependencies import Input, Output, State
-    from dash.exceptions import PreventUpdate
-    import pandas as pd
-    import plotly.graph_objs as go
-    import plotly.express as px
-    from model import prediction
-    from sklearn.model_selection import train_test_split
-    from sklearn.model_selection import GridSearchCV
-    import numpy as np
-    from sklearn.svm import SVR
-    from datetime import date, timedelta
-    # load the data
+import yfinance as yf
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.svm import SVR
+import numpy as np
+from datetime import date, timedelta
+import plotly.graph_objs as go
 
+def prediction(stock, n_days):
+    # Load the data
     df = yf.download(stock, period='1mo')
     df.reset_index(inplace=True)
     df['Day'] = df.index
 
     # Splitting the dataset
-
     X = df[['Day']]
     Y = df[['Close']]
 
-    x_train, x_test, y_train, y_test = train_test_split(X,
-                                                        Y,
-                                                        test_size=0.2,
-                                                        shuffle=False)
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, shuffle=False)
 
+    # GridSearch for SVR
     gsc = GridSearchCV(
         estimator=SVR(kernel='rbf'),
         param_grid={
             'C': [0.001, 0.01, 0.1, 1, 100, 1000],
-            'epsilon': [
-                0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10,
-                50, 100, 150, 1000
-            ],
+            'epsilon': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 50, 100, 150, 1000],
             'gamma': [0.0001, 0.001, 0.005, 0.1, 1, 3, 5, 8, 40, 100, 1000]
         },
         cv=5,
         scoring='neg_mean_absolute_error',
         verbose=0,
-        n_jobs=-1)
+        n_jobs=-1
+    )
 
     y_train = y_train.values.ravel()
-    y_train
     grid_result = gsc.fit(x_train, y_train)
     best_params = grid_result.best_params_
-    best_svr = SVR(kernel='rbf',
-                   C=best_params["C"],
-                   epsilon=best_params["epsilon"],
-                   gamma=best_params["gamma"],
-                   max_iter=-1)
-
+    best_svr = SVR(kernel='rbf', C=best_params["C"], epsilon=best_params["epsilon"], gamma=best_params["gamma"])
 
     rbf_svr = best_svr
-
     rbf_svr.fit(x_train, y_train)
 
-    output_days = []
-    for i in range(1, n_days):
-        if len(x_test) > 0:
-            output_days.append([i + x_test.iloc[-1]['Day']])
+    # Forecasting future days
+    last_day = df['Day'].iloc[-1]
+    output_days = np.arange(last_day + 1, last_day + n_days).reshape(-1, 1)
 
-    dates = []
-    current = date.today()
-    for i in range(n_days):
-        current += timedelta(days=1)
-        dates.append(current)
+    # Generating future dates
+    last_date = df['Date'].iloc[-1]
+    dates = [last_date + timedelta(days=i) for i in range(1, n_days + 1)]
 
-    
+    # Plotting
     fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=dates,  
-            y=rbf_svr.predict(output_days),
-            mode='lines+markers',
-            name='data'))
+    fig.add_trace(go.Scatter(x=dates, y=rbf_svr.predict(output_days), mode='lines+markers', name='Predicted Close'))
     fig.update_layout(
-        title="Predicted Close Price of next " + str(n_days - 1) + " days",
+        title="Predicted Close Price for the next " + str(n_days) + " days",
         xaxis_title="Date",
-        yaxis_title="Closed Price",
-      
+        yaxis_title="Close Price",
     )
 
     return fig
